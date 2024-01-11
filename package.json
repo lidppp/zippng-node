@@ -1,0 +1,15 @@
+{
+  "name": "zippng",
+  "version": "1.0.0",
+  "description": "A Node.js script for compressing PNG images using the TinyPNG API.",
+  "main": "index.js",
+  "keywords": ["tinypng", "image compression", "command-line", "png compression", "image optimization"],
+  "repository": "https://github.com/lidppp/zippng-node",
+  "author": "lidppp",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "18.18.2",
+    "readline-sync": "^1.4.10",
+    "tinify": "^1.7.1"
+  }
+}
