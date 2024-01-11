@@ -1,6 +1,6 @@
 {
   "name": "zippng",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Node.js script for compressing PNG images using the TinyPNG API.",
   "main": "index.js",
   "scripts": {
