@@ -1,5 +1,5 @@
 # zippng
-[English](./README.md)
+[English](./README.md)   
 一个使用 TinyPNG API 压缩 PNG 图片的简单 Node.js 脚本。
 
 ## 安装

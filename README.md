@@ -1,5 +1,5 @@
 # zippng
-[中文](./README_zh.md)
+[中文](./README_zh.md)   
 A simple Node.js script for compressing PNG format images using the TinyPNG API.
 
 ## Installation
