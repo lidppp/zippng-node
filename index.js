@@ -30,16 +30,21 @@ const run = (_path)=>{
   tinify.key = getKey()
   readDirList(_path).then(res=>{
     const spinnerTexts = {}
+    const pngArr = res.filter(item=>item.ext === ".png")
 
-    res.filter(item=>item.ext === ".png").forEach((item,index) => {
-      spinnerTexts[index] = `File compression started: ${item.path}\nOriginal file size before compression: ${(item.size / 1024).toFixed(2)} KB`;
+    if (!pngArr.length){
+      console.log("Can't find PNG file.")
+      return
+    }
+
+    pngArr.forEach((item,index) => {
+      spinnerTexts[index] = `[${item.path}] Original file size before compression: ${(item.size / 1024).toFixed(2)} KB`;
     });
 
 
     const spinner = new MultiSpinner(spinnerTexts, {
       interval: 100,
       indent: 2,
-      frames: ['-', '\\', '|', '/'], // 简单动画帧
       symbol: {
         success: '✓', // 成功符号
         error: '✗'   // 错误符号
@@ -50,16 +55,16 @@ const run = (_path)=>{
       console.log("Compression count for this month: " + tinify.compressionCount + "\n");
     });
 
-    res.filter(item=>item.ext === ".png").forEach((item, index)=>{
+    pngArr.forEach((item, index)=>{
       if(item.isDirectory && isDeep){
         run(item.path)
         return
       }
       tinify.fromFile(item.path).toFile(item.path).then(res=>{
-        spinner.spinners[index].text = `File compression completed: ${item.path}\nCompressed file size: ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`;
+        spinner.spinners[index].text = `[${item.path}] Compressed file size: ${(item.size / 1024).toFixed(2)} KB -> ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`;
         spinner.success(index);
       }).catch(err=>{
-        spinner.spinners[index].text = `File [${item.path}] compression failed. Please check your network or reset your TinyPNG API key using \`zippng -s key\`.\n\nError details:\n${err.message}`;
+        spinner.spinners[index].text = `[${item.path}] Compression failed. Please check your network or reset your TinyPNG API key using \`zippng -s key\`. Error details: [${err.message}]`;
         spinner.error(index);
       })
     })
