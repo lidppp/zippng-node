@@ -24,8 +24,11 @@
   "author": "lidppp",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "18.18.2",
+    "multispinner": "^0.2.1",
     "readline-sync": "^1.4.10",
     "tinify": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.18.2"
   }
 }

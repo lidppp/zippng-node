@@ -1,4 +1,5 @@
 const path = require("path")
+const MultiSpinner = require("multispinner")
 const fs = require("fs")
 const {question} = require("readline-sync");
 // 创建tinypng实例
@@ -28,21 +29,39 @@ const readDirList = (_path)=>{
 const run = (_path)=>{
   tinify.key = getKey()
   readDirList(_path).then(res=>{
-    res.forEach(item=>{
+    const spinnerTexts = {}
+
+    res.filter(item=>item.ext === ".png").forEach((item,index) => {
+      spinnerTexts[index] = `File compression started: ${item.path}\nOriginal file size before compression: ${(item.size / 1024).toFixed(2)} KB`;
+    });
+
+
+    const spinner = new MultiSpinner(spinnerTexts, {
+      interval: 100,
+      indent: 2,
+      frames: ['-', '\\', '|', '/'], // 简单动画帧
+      symbol: {
+        success: '✓', // 成功符号
+        error: '✗'   // 错误符号
+      }
+    });
+
+    spinner.on('done', () => {
+      console.log("Compression count for this month: " + tinify.compressionCount + "\n");
+    });
+
+    res.filter(item=>item.ext === ".png").forEach((item, index)=>{
       if(item.isDirectory && isDeep){
         run(item.path)
         return
       }
-      if(item.ext === ".png"){
-        console.log(`File compression started: ${item.path}\nOriginal file size before compression: ${(item.size / 1024).toFixed(2)} KB`)
-
-        tinify.fromFile(item.path).toFile(item.path).then(res=>{
-          console.log(`File compression completed: ${item.path}\nCompressed file size: ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`)
-          console.log("Compression count for this month: " + tinify.compressionCount + "\n")
-        }).catch(err=>{
-          console.log(`File [${item.path}] compression failed. Please check your network or reset your TinyPNG API key using \`zippng -s key\`.\n\nError details:\n${err.message}`)
-        })
-      }
+      tinify.fromFile(item.path).toFile(item.path).then(res=>{
+        spinner.spinners[index].text = `File compression completed: ${item.path}\nCompressed file size: ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`;
+        spinner.success(index);
+      }).catch(err=>{
+        spinner.spinners[index].text = `File [${item.path}] compression failed. Please check your network or reset your TinyPNG API key using \`zippng -s key\`.\n\nError details:\n${err.message}`;
+        spinner.error(index);
+      })
     })
   })
 }
