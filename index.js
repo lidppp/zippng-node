@@ -25,12 +25,25 @@ const readDirList = (_path)=>{
     })
   })
 }
+
+const padText = (text, minLength)=>{
+  if (text.length < minLength) {
+    return text + ' '.repeat(minLength - text.length);
+  }
+  return text;
+}
+
+const filterExt = (ext)=>{
+  const _ext = ext.toLowerCase()
+  return _ext === ".png" || _ext === ".jpg" || _ext === ".jpge"
+}
+
 // 执行压缩程序
 const run = (_path)=>{
   tinify.key = getKey()
   readDirList(_path).then(res=>{
     const spinnerTexts = {}
-    const pngArr = res.filter(item=>item.ext === ".png")
+    const pngArr = res.filter(item=> filterExt(item.ext))
 
     if (!pngArr.length){
       console.log("Can't find PNG file.")
@@ -45,6 +58,7 @@ const run = (_path)=>{
     const spinner = new MultiSpinner(spinnerTexts, {
       interval: 100,
       indent: 2,
+      frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'], // 更流畅的动画
       symbol: {
         success: '✓', // 成功符号
         error: '✗'   // 错误符号
@@ -61,7 +75,8 @@ const run = (_path)=>{
         return
       }
       tinify.fromFile(item.path).toFile(item.path).then(res=>{
-        spinner.spinners[index].text = `[${item.path}] Compressed file size: ${(item.size / 1024).toFixed(2)} KB -> ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`;
+        const outputText = `[${item.path}] Compressed file size: ${(item.size / 1024).toFixed(2)} KB -> ${(fs.statSync(item.path).size / 1024).toFixed(2)} KB`
+        spinner.spinners[index].text = padText(outputText, spinnerTexts[index].length);
         spinner.success(index);
       }).catch(err=>{
         spinner.spinners[index].text = `[${item.path}] Compression failed. Please check your network or reset your TinyPNG API key using \`zippng -s key\`. Error details: [${err.message}]`;
